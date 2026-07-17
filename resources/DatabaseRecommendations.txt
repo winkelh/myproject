@@ -1,0 +1,735 @@
+File: Plan_ON_ASH_June_2ndset for 4 types of actions - Tech order Team accept
+
+Generic:
+In this response are the recommendations listed that realistically can be applied on the short term. Some improvements 
+could be made in the Planon query builder but this is a more long term process that will not be detaild here. The queries listed here will 
+be used as input to reflect on and improve on our query builder but Planon cannot commiit on improvements here on the short term.
+
+Over index suggestions:
+Please do note that these suggested indexes should be removed before attempting any upgrade of the Planon database in the future.
+
+It is assumed that Oracle statistics are maintained regulary.
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : gh6kj2ktk54ks
+
+A slight advantage can be taken from accepting the SQL Profile. Do not expect miracles but it is a qick win.
+
+execute dbms_sqltune.accept_sql_profile(
+  task_name => 'gh6kj2ktk54ks',
+  task_owner => 'SYSTEM',
+  replace => TRUE
+);
+
+A win would be applying these indexes. 
+
+CREATE INDEX PLN_CI_001 
+ON OBJALG (UPPER(VRIJ9));
+
+CREATE INDEX PLN_CI_002
+ON PLN_BOSTATE (UPPER(PNNAME));
+
+CREATE INDEX PLN_CI_003
+ON PLN_MOBILE_ENVELOPE (UPPER(TYPE));
+
+CREATE INDEX PLN_CI_004
+ON PLN_WORKASSIGNMENT (
+  BEHCODE,
+  FK_RESOURCE_PERSON,
+  FK_BOSTATE,
+  SYSCODE
+);
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 3cavbuhmfbb3n
+
+Index suggestions:
+
+create index PLANON_IWMS.PLN_CI_005 -- Adjust number if required
+on PLANON_IWMS.PLN_CATALOGITEMREQUESTLI
+("STANDARD","FK_CATALOGITEM","BEHCODE","SYSCODE");
+
+create index PLANON_IWMS.PLN_CI_006 -- Adjust number if required
+on PLANON_IWMS.PLN_ISSUE
+("FK_BOSTATE","FK_DISTRIBPOINT","BEHCODE","SYSCODE");
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : f2gu8gz9mkazj
+
+CREATE INDEX PLN_CI_007
+ON PERS (UPPER(CODE));
+
+This query will also profit from the index PLN_CI_001 mentioned before.
+
+
+CREATE INDEX PLN_CI_010
+ON ORDURN (
+  BEHCODE,
+  SYSPERSUITV,
+  BEGINDATE,
+  ENDDATE
+);
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 6h8hxfch1gf4y
+
+Main winpoint here is:
+
+CREATE INDEX PLANON_IWMS.PLN_CI_011
+ON PLANON_IWMS.PLN_WORKASSIGNMENT(PLANNED_BEGIN_DATETIME);
+
+CREATE INDEX PLANON_IWMS.PLN_CI_011
+ON PLANON_IWMS.PLN_ROLEPLAYER(SYSCODE, BEHCODE, BEGINDATE);
+
+The suggested SQL Profile can help but do not expect wonders here:
+EXEC dbms_sqltune.accept_sql_profile(
+  task_name => '6h8hxfch1gf4y',
+  task_owner => 'SYSTEM',
+  replace => TRUE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : brstvhmzc6s37
+
+Bit of an odd one this. It is reported as a cartesian product while it is not. In the explain plans section it does not show the excessive number of records one would expect at a cartesian product. No real advice here.
+
+ 
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 5t6fc0dbmqt7v
+
+For this query the most realistic short term improvement will be the beforementioned index PLN_CI_001 on OBJALG.VRIJ9.
+
+Also this one:
+CREATE INDEX PLANON_IWMS.PLN_CI_012
+ON PLANON_IWMS.ORD_NOARCHIVE(STANDAARD, BEHCODE, FK_BODEFINITION_USERDEFINED, FREE02_INTEGER)
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 6wsmn9v2051ym
+
+SQL Profile gives about 50% improvement
+
+EXEC DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+  task_name  => '6wsmn9v2051ym',
+  task_owner => 'SYSTEM',
+  replace    => TRUE
+);
+
+This query will also profit from the index PLN_CI_001 on OBJALG.VRIJ9.
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 4d4z12c35t4ga
+
+The single most important suggestion here is this index: 
+CREATE INDEX PLANON_IWMS.PLN_CI_013
+ON PLANON_IWMS.ORD_NOARCHIVE(SYSCODEPAR, SYSPERSCOO);
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : dzv396tm792rj
+
+The SQL Profile  is by far the most important recommendation here.
+
+execute dbms_sqltune.accept_sql_profile(
+   task_name  => 'dzv396tm792rj',
+   task_owner => 'SYSTEM',
+   replace    => TRUE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 0h0ca2s506jvu
+
+Index suggestions:
+
+CREATE INDEX PLANON_IWMS.PLN_CI_014
+ON PLANON_IWMS.OBJALG (IS_ARCHIVED, BEHCODE);
+
+
+CREATE INDEX PLANON_IWMS.PLN_CI_015
+ON PLANON_IWMS.PLN_BOSTATE (FK_BODEFINITION, SYSCODE, TYPE);
+
+CREATE INDEX PLANON_IWMS.PLN_CI_016
+ON PLANON_IWMS.ORD
+(STANDAARD,
+ FK_BODEFINITION_USERDEFINED,
+ BEHCODE,
+ UPPER(NAAM),
+ SYSCODEPAR,
+ SYSOBJALG);
+
+CREATE INDEX PLANON_IWMS.PLN_CI_017
+ON PLANON_IWMS.ORD (BEHCODE, STANDAARD, SYSCODE);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : cx9kz71a17p9h
+
+This query will also profit from the index PLN_CI_001 on OBJALG.VRIJ9.
+
+CREATE INDEX PLN_CI_017
+ON OBJALG (BEHCODE, FK_BODEFINITION_USERDEFINED, FK_COUNTRY2, VRIJ9);
+
+CREATE INDEX PLN_CI_018
+ON ORD_NOARCHIVE (
+  BEHCODE,
+  STANDAARD,
+  REF_BODEFINITION,
+  SYSPERSCOO,
+  SYSINV
+);
+
+CREATE INDEX PLN_CI_019
+ON PLN_WORKASSIGNMENT (
+  FK_ORDER,
+  BEHCODE,
+  IS_ARCHIVED,
+  FK_BOSTATE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 9b0pkgqj6vbkx
+
+
+Bit of an odd one this. It is reported as a cartesian product while it is not. In the explain plans section it does not show the excessive number of records one would expect at a cartesian product. No real advice here.
+
+
+File: PLANON_IWMS for original PPM extreme long timings
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 2d33uvum8mz3y
+
+CREATE INDEX PLN_CI_020
+ON PLN_MOBILE_ENVELOPE_LINK (
+  UPPER(SUBTYPE),
+  FK_MOBILE_ENVELOPE,
+  BUSINESSOBJECT_SYSCODE
+);
+
+This query will also profit from indexes PLN_CI_001, PLN_CI_004 and PLN_CI_017
+
+CREATE INDEX PLN_CI_021
+ON PLN_BODEFINITION(SYSCODE, FK_BODEFINITION_SYSTEMPARENT);
+
+CREATE INDEX PLN_CI_022
+ON PLN_BODEFINITION(SYSCODE, TYPE);
+
+CREATE INDEX PLN_CI_023
+ON PLN_MOBILE_ENVELOPE_LINK (UPPER(SUBTYPE));
+
+This query will profit from PLN_CI_002
+
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 682tkmb7athy8
+
+Here the best advice is to accept the SQL Profile:
+
+EXEC dbms_sqltune.accept_sql_profile(
+    task_name  => '682tkmb7athy8',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 7s41rz6m3thzw
+
+Here too the best advice is to accept the SQL Profile:
+EXEC dbms_sqltune.accept_sql_profile(
+    task_name  => '7s41rz6m3thzw',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+);
+
+Alternative is this:
+EXEC dbms_sqltune.create_sql_plan_baseline(
+    task_name => '7s41rz6m3thzw',
+    owner_name => 'SYSTEM',
+    plan_hash_value => 1180956455
+);
+
+Just test what performs better.
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 57fwpvd4x2hn1
+
+This query will profit from index: PLN_CI_001 
+
+And:
+
+CREATE INDEX PLN_CI_025
+ON PLN_LANGORDGRP (UPPER(CODEGRP));
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 3p35z8hm2n5ay
+
+Top actions (do these first)
+Accept SQL Profile (fastest win)
+
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name  => '3p35z8hm2n5ay',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+  );
+END;
+
+Also the previously suggested indexs PLN_CI_020, PLN_CI_004 will have a large impact.
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 5959n0fm05wf3
+
+Accept the SQL Profile:
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name  => '5959n0fm05wf3',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+  );
+END;
+
+Indexes:
+This query will profit from PLN_CI_020, PLN_CI_021, PLN_CI_022, PLN_CI_004
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 2hmuqdnah1dg6
+
+CREATE INDEX PLN_CI_026
+ON PLANON_IWMS.PLN_LANGPRODUCT (UPPER(FREE05));
+
+CREATE INDEX PLN_CI_027
+ON PLANON_IWMS.CODES (UPPER(GRP), UPPER(CODE));
+
+CREATE INDEX PLN_CI_028
+ON PLANON_IWMS.PLN_PRODUCT (UPPER(CAN_BE_REQUESTED));
+
+CREATE INDEX PLN_CI_029
+ON PLANON_IWMS.PLN_PRODUCT (UPPER(FREE18));
+
+CREATE INDEX PLN_CI_030
+ON PLANON_IWMS.PLN_PRODUCT (UPPER(FREE23));
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : bf4kdpm38fm2b
+
+Key Finding
+SQL Profile 
+
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name  => 'bf4kdpm38fm2b',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+  );
+END;
+
+Indexes:
+CREATE INDEX IDX_OBJALG_FILTER
+ON PLANON_IWMS.OBJALG (
+  FK_BODEFINITION_USERDEFINED,
+  FK_COUNTRY2,
+  UPPER(VRIJ9),
+  BEHCODE
+);
+
+CREATE INDEX PLN_CI_031
+ON PLANON_IWMS.ORDURN (SYSORD, BEGINDATE, BEHCODE);
+
+This query will also profit from index: PLN_CI_007, PLN_CI_012
+
+CREATE INDEX PLN_CI_032
+ON PLANON_IWMS.PLN_BOSTATE (UPPER(TYPE), UPPER(PNNAME));
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : ga7hvnxgc8az6
+
+This query is reported as a cartesian product while it is not. In the explain plans section it does not show the excessive number of records one would expect at a cartesian product. No real advice here.
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 7xht1hk8bmfmc
+
+SQL Profile: Cost: 9302 → 4317 (~53% improvement)
+
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name  => '7xht1hk8bmfmc',
+    task_owner => 'SYSTEM',
+    replace    => TRUE,
+    profile_type => DBMS_SQLTUNE.PX_PROFILE
+  );
+END;
+
+This query will also profit from index PLN_CI_001
+
+Index suggestion:
+CREATE INDEX PLN_CI_033
+ON PLANON_IWMS.PLN_LANG_BASEMTN_ACTDEF (
+  FK_ORDER,
+  FK_LANGP5DEFINITION,
+  SUBTYPE,
+  BEHCODE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : ap247a0uqcxb7
+
+This query will profit from index: PLN_CI_026, PLN_CI_027, PLN_CI_028, PLN_CI_029, PLN_CI_030
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 8r291w6sjdxt4
+
+This query will profit from index PLN_CI_012, PLN_CI_017, PLN_CI_025
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : cqtx9suvu8c2y
+
+Parallel SQL Profile (big gain)
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name     => 'cqtx9suvu8c2y',
+    task_owner    => 'SYSTEM',
+    replace       => TRUE,
+    profile_type  => DBMS_SQLTUNE.PX_PROFILE
+  );
+END;
+
+
+The query will profit from PLN_LANGPRODUCT.FK_PRODUCTGROUP being indexed. An index on PLN_LANGPRODUCT.FK_PRODUCTGROUP is supposed to be there already 
+in the first place. The following statement will create this index if it does not exist yet.
+Begin
+  PLN_DBTOOLBOX.ADDINDEX(p_Tablename => 'PLN_LANGPRODUCT', p_Columnname => 'FK_PRODUCTGROUP');
+End;
+/
+
+CREATE INDEX PLN_CI_034
+ON PLANON_IWMS.PLN_PRODUCT (BEHCODE, IS_ARCHIVED);
+
+CREATE INDEX PLN_CI_035
+ON PLANON_IWMS.PLN_PRODUCT (UPPER(NAME));
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 3vc8hsuxj93qm
+
+SQL Profile very big improvement
+
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name => '3vc8hsuxj93qm',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+  );
+END;
+
+This query will also profit from index: PLN_CI_012, PLN_CI_031, PLN_CI_007, PLN_CI_001, PLN_CI_017
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 49nvt5anjd9av
+
+Parallel execution will give a moderate gain:
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name    => '49nvt5anjd9av',
+    task_owner   => 'SYSTEM',
+    replace      => TRUE,
+    profile_type => DBMS_SQLTUNE.PX_PROFILE
+  );
+END;
+
+This query will also profit from index: PLN_CI_016, PLN_CI_019, PLN_CI_017, PLN_CI_001
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : dwcc8gjry3pcu
+
+SQL Profile = HUGE improvement
+
+BEGIN
+  DBMS_SQLTUNE.ACCEPT_SQL_PROFILE(
+    task_name => 'dwcc8gjry3pcu',
+    task_owner => 'SYSTEM',
+    replace    => TRUE
+  );
+END;
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 3qm9ay1r3hj14
+
+This query will profit from index: PLN_CI_012, PLN_CI_017, PLN_CI_001
+
+CREATE INDEX PLN_CI_036
+ON ORD_NOARCHIVE (
+  SYSORDGRP,
+  SYSOBJALG,
+  SYSPERSCOO
+);
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : bz3qcs4y2h714
+
+Biggest win: create the recommended indexes
+Impact: ~96% improvement
+
+CREATE INDEX PLANON_IWMS.PLN_CI_037
+ON PLANON_IWMS.PLN_BODEFINITION(TYPE);
+
+-- Index 2 (high-impact composite index on ORD)
+CREATE INDEX PLANON_IWMS.PLN_CI_038
+ON PLANON_IWMS.ORD
+(STANDAARD, ARCHIEF, FK_BODEFINITION_USERDEFINED, BEHCODE, SYSCODE);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 1d61pa36chbgb
+
+Main advice: accept the SQL Profile
+Oracle did not recommend indexes or rewrites here — instead it found a better execution plan via a SQL Profile.
+
+EXEC dbms_sqltune.accept_sql_profile(
+    task_name => '1d61pa36chbgb',
+    task_owner => 'SYSTEM',
+    replace => TRUE
+);
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 8333w73262tm6
+
+This one is not an index problem but a plan choice problem. Primary recommendation: SQL Profile with parallel execution.
+
+EXEC dbms_sqltune.accept_sql_profile(
+    task_name   => '8333w73262tm6',
+    task_owner  => 'SYSTEM',
+    replace     => TRUE,
+    profile_type => DBMS_SQLTUNE.PX_PROFILE
+);
+
+Estimated improvement: ~55% faster
+Execution uses parallelism (DOP = 2)
+
+This query will also profit from index PLN_CI_001
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 10xvh14ys37uc
+
+This query will also profit from index PLN_CI_001
+
+Also it may profit from this index:
+
+CREATE INDEX PLN_CI_039
+ON ORDGRP (UPPER(CODEGRP));
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 5bs21d15927rp
+
+
+This query is reported as a cartesian product while it is not. In the explain plans section it does not show the excessive number of records one would expect at a cartesian product. 
+
+This query will also profit from index PLN_CI_001
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : bv1nkypmk7udr
+
+For this query Oracle chooses a poor execution plan for some reason. A better one can be used by accepting the SQL Profile:
+exec dbms_sqltune.accept_sql_profile(
+  task_name => 'bv1nkypmk7udr',
+  task_owner => 'SYSTEM',
+  replace => TRUE
+);
+
+Though this will not lead to better performance but it will result in less resource consumption.
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 0xzwach715tw4
+
+Here Oracle is not consistently picking the best plan. So LOCK the good plan:
+
+exec dbms_sqltune.create_sql_plan_baseline(
+  task_name => '0xzwach715tw4',
+  owner_name => 'SYSTEM',
+  plan_hash_value => 1397637053
+);
+
+This query will also profit from index PLN_CI_002, PLN_CI_032
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : ff8j1dd045sf2
+
+This query is reported as a cartesian product while it is not. In the explain plans section it does not show the excessive number of records one would expect at a cartesian product. 
+
+This query will also profit from index PLN_CI_001
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : as1hpn6jk67py
+
+This is just a very complex query. No real tweaks here.
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 5ctm9y9y7rvdk
+
+This query will also profit from index PLN_CI_027
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 8y7gg1hmvkvyt
+
+This query is slow mainly because it lacks a good index.
+
+CREATE INDEX PLN_CI_040
+ON PLANON_IWMS.PLN_FREE22
+(
+    UPPER("FREE61"),
+    "SYSCODE",
+    "FREE_INTEGER2",
+    "REF_BOSTATE_USERDEFINED"
+);
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 6u4p00x2z25at
+
+CREATE INDEX PLANON_IWMS.PLN_CI_041
+ON PLANON_IWMS.PLN_MOBILE_ENVELOPE
+(
+    "FK_ASSIGNED_TO",
+    "FK_BOSTATE_SYSTEM",
+    "SYSCODE"
+);
+
+This query will profit from index: PLN_CI_020, PLN_CI_004
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 83s1wb7gqs2x9
+
+Accept the SQL Profile here. Estimated impact is about 87%.
+
+exec dbms_sqltune.accept_sql_profile(
+    task_name => '83s1wb7gqs2x9',
+    task_owner => 'SYSTEM',
+    replace => TRUE
+);
+
+CREATE INDEX PLANON_IWMS.PLN_CI_042
+ON PLANON_IWMS.PLN_MOBILE_ENVELOPE_LINK
+(UPPER(SUBTYPE), FK_MOBILE_ENVELOPE, BUSINESSOBJECT_SYSCODE);
+
+This query will profit from index: PLN_CI_020, PLN_CI_004
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 0kx60kkmw8k2w
+
+
+Highest impact fix: Accept SQL Profile 99.85% improvement estimate 
+
+execute dbms_sqltune.accept_sql_profile(
+    task_name => '0kx60kkmw8k2w',
+    task_owner => 'SYSTEM',
+    replace => TRUE
+);
+
+This query will also profit from index PLN_CI_001, PLN_CI_019, PLN_CI_017
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : ad7ybknynnxd5
+
+Strong recommendation: Use SQL Profile (≈85% benefit)
+
+exec dbms_sqltune.accept_sql_profile(
+  task_name  => 'ad7ybknynnxd5',
+  task_owner => 'SYSTEM',
+  replace    => TRUE
+);
+
+This query will also profit from index PLN_CI_001, PLN_CI_039
+
+The query will profit from ORD.SYSCODEPAR being indexed. An index on ORD.SYSCODEPAR is supposed to be there already 
+in the first place. The following statement will create this index if it does not exist yet.
+Begin
+  PLN_DBTOOLBOX.ADDINDEX(p_Tablename => 'ORD', p_Columnname => 'SYSCODEPAR');
+End;
+/
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : b1nhhjy3tmr9k
+
+This query will also profit from index PLN_CI_001, PLN_CI_039
+
+CREATE INDEX PLN_CI_043
+ON ORD(UPPER(CODE));
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : f3r2qcz3sx92p
+
+This query will also profit from index PLN_CI_001, PLN_CI_017
+
+
+-------------------------------------------------------------------------------
+Query:
+SQL ID        : 5yjm70vgpkmqn
+
+This query will also profit from index PLN_CI_001, PLN_CI_017
+
+
