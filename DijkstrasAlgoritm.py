@@ -46,12 +46,4 @@ ed.add_edge("C", "D", 13)
 
 print(ed.get_nodes())
 
-"""
-for key in ed.get_nodes().keys():
-    pass
-    print(f"Node {key} is visited: {ed.get_nodes()[key]['visited']}")
-
-
-ed.navigate_route()
-"""
 
