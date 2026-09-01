@@ -36,7 +36,6 @@ class Graph:
 
         # Walk through the nodes
         current_node = self.graph[start_node]
-        print(f"current_node: Name: {start_node}; Data: {current_node}")
         self.graph[start_node]["visited"] = True
         for neighbor in self.graph[start_node]["neighbors"]:
             distance = self.graph[start_node]["neighbors"][neighbor]
