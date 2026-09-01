@@ -30,7 +30,8 @@ class Graph:
         for node in unvisited_nodes:
             nodes[node] = {
                 "distance": float('inf'),
-                "visited": False
+                "visited": False,
+                "previous": None
             }
         nodes[start_node]["distance"] = 0
 
