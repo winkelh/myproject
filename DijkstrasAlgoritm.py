@@ -3,9 +3,10 @@ from typing import KeysView
 
 
 class Graph:
+    NOT_APPLICABLE = 'n/a' 
+
     def __init__(self, graph: Dict = None) -> None:
         self.graph = graph if graph is not None else {}
-        self.nodes = {}
 
     def add_node(self, name: str) -> None:
         self.graph[name] = {"neighbors": {}}
@@ -23,30 +24,45 @@ class Graph:
         
     def get_graph(self) -> Dict:
         return self.graph
+
+    def find_nearest_node(self, nodes: Dict) -> str:
+        nearest_node = Graph.NOT_APPLICABLE
+        smallest_known_distance: float('inf')
+        
+        for node in nodes.keys():
+            if not nodes[node]['visited']:
+                if nodes[node]['distance_to_start'] < smallest_known_distance:
+                    nearest_node            = node
+                    smallest_known_distance = nodes[node]['distance_to_start']
+                
+        return nearest_node
         
     def find_shortest_route(self, start_node: str, end_node: str) -> Dict:
+        nodes = {}
         # initialize the nodes with distance_to_start and visited status
         for node in self.graph.keys():
-            self.nodes[node] = {
+            nodes[node] = {
                 "distance_to_start": float('inf'),
-                "visited" : False,
+                "visited": False,
             }
-        self.nodes[start_node]["distance_to_start"] = 0
+        nodes[start_node]["distance_to_start"] = 0
 
         # Walk through the nodes, start with the start node and walk through its unvisited neighbors.
         current_node = start_node
-        for neighbor in self.graph[current_node]["neighbors"]:
-            current_node_distance_to_start = self.nodes[current_node]["distance_to_start"]
-            edge_weight                    = self.graph[start_node]["neighbors"][neighbor]
-            neighbor_distance_to_start     = self.nodes[neighbor]["distance_to_start"]
-            if current_node_distance_to_start + edge_weight < neighbor_distance_to_start: 
-                self.nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
-            print(f"Debug: Start Node: {current_node} current_node_distance_to_start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {self.nodes[neighbor]["distance_to_start"]}")
-            
-            self.graph[current_node]["visited"] = True
-            # Now initialize the next current node
+        while current_node != Graph.NOT_APPLICABLE:
+            for neighbor in self.graph[current_node]["neighbors"]:
+                current_node_distance_to_start = nodes[current_node]["distance_to_start"]
+                edge_weight                    = self.graph[start_node]["neighbors"][neighbor]
+                neighbor_distance_to_start     = nodes[neighbor]["distance_to_start"]
+                if current_node_distance_to_start + edge_weight < neighbor_distance_to_start: 
+                    nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
+                print(f"Debug: Start Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
+                
+                self.graph[current_node]["visited"] = True
+                # Now initialize the next current node
+            current_node = self.find_nearest_node(nodes)
 
-        return self.nodes
+        return nodes
         
 
 ed = Graph()
@@ -67,6 +83,9 @@ print(f"Dump of the edges: {ed.get_graph()}")
 #print(f"Graph: {ed.get_graph()}")
 #print(f"Nodes: {ed.get_nodes()}")
 n = ed.find_shortest_route("A", "D")
-print(f"Shortest route: {n}")
+print(f"Dump of intelligence learned: {n}")
 
+for node in n:
+    print(f"nodes: {node}")
 
+print(f"End of program.")
