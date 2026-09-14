@@ -27,7 +27,7 @@ class Graph:
 
     def find_nearest_node(self, nodes: Dict) -> str:
         nearest_node = Graph.NOT_APPLICABLE
-        smallest_known_distance: float('inf')
+        smallest_known_distance = float('inf')
         
         for node in nodes.keys():
             if not nodes[node]['visited']:
@@ -52,14 +52,14 @@ class Graph:
         while current_node != Graph.NOT_APPLICABLE:
             for neighbor in self.graph[current_node]["neighbors"]:
                 current_node_distance_to_start = nodes[current_node]["distance_to_start"]
-                edge_weight                    = self.graph[start_node]["neighbors"][neighbor]
+                edge_weight                    = self.graph[current_node]["neighbors"][neighbor]
                 neighbor_distance_to_start     = nodes[neighbor]["distance_to_start"]
                 if current_node_distance_to_start + edge_weight < neighbor_distance_to_start: 
                     nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
-                print(f"Debug: Start Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
+                print(f"Debug: Current Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
                 
-                self.graph[current_node]["visited"] = True
-                # Now initialize the next current node
+            nodes[current_node]["visited"] = True
+            # Now initialize the next current node
             current_node = self.find_nearest_node(nodes)
 
         return nodes
