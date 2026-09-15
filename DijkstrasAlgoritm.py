@@ -39,6 +39,8 @@ class Graph:
         
     def find_shortest_route(self, start_node: str, end_node: str) -> Dict:
         nodes = {}
+        previous_node = ""
+        
         # initialize the nodes with distance_to_start and visited status
         for node in self.graph.keys():
             nodes[node] = {
@@ -54,14 +56,15 @@ class Graph:
             for neighbor in self.graph[current_node]["neighbors"]:
                 current_node_distance_to_start = nodes[current_node]["distance_to_start"]
                 edge_weight                    = self.graph[current_node]["neighbors"][neighbor]
-                neighbor_distance_to_start     = nodes[neighbor]["distance_to_start"]
-                if current_node_distance_to_start + edge_weight < neighbor_distance_to_start: 
+                if current_node_distance_to_start + edge_weight < nodes[neighbor]["distance_to_start"]: 
                     nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
-                    nodes[neighbor]["route"] = nodes[current_node]["route"]
-                    nodes[neighbor]["route"].append(current_node)
                 print(f"Debug: Current Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
                 
             nodes[current_node]["visited"] = True
+            if previous_node:
+                nodes[current_node]["route"] = nodes[previous_node]["route"]
+            nodes[current_node]["route"].append(current_node)
+            previous_node = current_node
             # Now initialize the next current node
             current_node = self.find_nearest_node(nodes)
 
