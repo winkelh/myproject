@@ -44,6 +44,7 @@ class Graph:
             nodes[node] = {
                 "distance_to_start": float('inf'),
                 "visited": False,
+                "route": [],
             }
         nodes[start_node]["distance_to_start"] = 0
 
@@ -56,6 +57,8 @@ class Graph:
                 neighbor_distance_to_start     = nodes[neighbor]["distance_to_start"]
                 if current_node_distance_to_start + edge_weight < neighbor_distance_to_start: 
                     nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
+                    nodes[neighbor]["route"] = nodes[current_node]["route"]
+                    nodes[neighbor]["route"].append(current_node)
                 print(f"Debug: Current Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
                 
             nodes[current_node]["visited"] = True
