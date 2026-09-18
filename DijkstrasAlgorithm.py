@@ -60,8 +60,7 @@ class Graph:
                 if current_node_distance_to_start + edge_weight < nodes[neighbor]["distance_to_start"]: 
                     nodes[neighbor]["distance_to_start"] = current_node_distance_to_start + edge_weight
                     nodes[neighbor]["previous_node"]     = current_node
-                print(f"Debug: Current Node: {current_node} current node distance to start: {current_node_distance_to_start}; Neighbor node: {neighbor} Edge weigth: {edge_weight} / distance to start: {nodes[neighbor]["distance_to_start"]}")
-                
+
             nodes[current_node]["visited"] = True
 
             # Now initialize the next current node
