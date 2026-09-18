@@ -2,8 +2,8 @@ from DijkstrasAlgorithm import Graph
 
 def main():
     graph = Graph()
-    boardX = 100
-    boardY = 100
+    boardX = 1000
+    boardY = 1000
     countX = 1
     countY = 1
 
@@ -24,7 +24,7 @@ def main():
                 graph.add_edge(current_node, f"{x}_{y + 1}", 1)
 
     start_node = "3_4"
-    end_node = "89_97"
+    end_node = "899_979"
     n = graph.process_route(start_node, end_node)
     print(f"The shortest distance from start node {start_node} to end node {end_node} is {graph.find_shortest_route(start_node, end_node)}")
     print(f"The route taken was: {graph.find_route(n, end_node)}")
