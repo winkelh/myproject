@@ -11,3 +11,10 @@ class AdditionDataGenerator:
         self.answers = np.sum(self.train_data, axis=1)
         return self.train_data, self.answers      
             
+    def get_traindata() -> np.ndarray:
+        return self.train_data
+        
+    def get_answers() -> np.ndarray:
+        return self.answers
+        
+        
