@@ -1,23 +1,17 @@
+# the caller script
+
 import AdditionDataGenerator
-import numpy as np
 import SingleNeuronModel
+import numpy as np
 train_data: np.ndarray
 answers: np.ndarray
 
-adg = AdditionDataGenerator.AdditionDataGenerator(2000, 100.00)
+adg = AdditionDataGenerator.AdditionDataGenerator()
+train_data, answers = adg.generate_traindata(sample_size = 2000, max_number = 100.00)
+snm = SingleNeuronModel.SingleNeuronModel(weight_1 = 0.7, weight_2 = 1.2, bias = 1)
+predictions = snm.forward(train_data = train_data)
+total_loss = snm.calculate_loss(predictions = predictions, answers = answers)
+print(f"Predictions: {predictions}")
+print(f"Answers: {answers}")
+print(f"Mean squared loss: {total_loss}")
 
-train_data, answers = adg.generate_traindata()
-
-print(f"train_data: {train_data}, answers: {answers}")
-
-a = np.array([[3, 7], [8, 11], [24, 3]])
-b1 = 0.7
-b2 = 1.2
-c = a[:, 0] * b1
-d = a[:, 1] * b2
-print(f"Result 1: {c}")
-print(f"Result 2: {d}")
-
-snm = SingleNeuronModel.SingleNeuronModel(2000, 100.00, 0.7, 1.2, 3)
-e = snm.forward()
-print(e)
