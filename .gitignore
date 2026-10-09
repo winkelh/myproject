@@ -1,0 +1,6 @@
+.idea/
+__pycache__/
+__pycache__/AdditionDataGenerator.cpython-314.pyc
+./AI_neural/__pycache__/
+*.pyc
+try.py
