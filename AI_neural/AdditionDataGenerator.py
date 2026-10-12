@@ -1,6 +1,5 @@
 # AdditionDataGenerator class
 import numpy as np
-import random
 
 class AdditionDataGenerator:
     def __init__(self) -> None:
